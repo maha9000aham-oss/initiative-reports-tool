@@ -34,6 +34,8 @@
 
   --danger:#dc2626;
 
+  --warn:#ca8a04;
+
   --shadow:0 14px 36px rgba(18,59,109,.12);
 
 }
@@ -294,17 +296,51 @@ textarea{
 
 .good{background:var(--success)}
 
-.warn{background:#ca8a04}
+.warn{background:var(--warn)}
 
 .low{background:var(--danger)}
 
 .small{font-size:12px;color:var(--muted);margin-top:10px}
 
+.signatures{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:14px;
+
+  margin-top:14px;
+
+}
+
+.sign-box{
+
+  border:1px dashed var(--border);
+
+  border-radius:16px;
+
+  padding:14px;
+
+  background:#fff;
+
+}
+
+.sign-line{
+
+  margin-top:18px;
+
+  border-top:1px solid #9ca3af;
+
+  height:24px;
+
+}
+
 @media(max-width:980px){
 
   .grid{grid-template-columns:1fr}
 
-  .row2,.row3,.metrics{grid-template-columns:1fr}
+  .row2,.row3,.metrics,.signatures{grid-template-columns:1fr}
 
 }
 
@@ -348,7 +384,7 @@ textarea{
 
         <input id="initiative" value="منظومة منصات كريمة بنت همام الذكية">
 
-        <div class="row2">
+        <div class="row3">
 
           <div>
 
@@ -366,9 +402,47 @@ textarea{
 
           <div>
 
-            <label>الفترة</label>
+            <label>الفصل الدراسي</label>
 
-            <input id="period" value="الفصل الدراسي ">
+            <select id="term">
+
+              <option>الفصل الدراسي الأول</option>
+
+              <option>الفصل الدراسي الثاني</option>
+
+              <option>الفصل الدراسي الثالث</option>
+
+              <option>العام الدراسي كاملًا</option>
+
+            </select>
+
+          </div>
+
+          <div>
+
+            <label>العام الدراسي</label>
+
+            <input id="academicYear" value="1447هـ">
+
+          </div>
+
+        </div>
+
+        <div class="row2">
+
+          <div>
+
+            <label>اسم القائدة</label>
+
+            <input id="leaderName" value="ابتهال عبدالله الصاملي">
+
+          </div>
+
+          <div>
+
+            <label>اسم معدة التقرير</label>
+
+            <input id="preparedBy" placeholder="اكتبي اسم معدة التقرير">
 
           </div>
 
@@ -380,7 +454,7 @@ textarea{
 
             <label>الجهة المعدة للتقرير</label>
 
-            <input id="preparedBy" value="فريق المتابعة والتقويم">
+            <input id="department" value="فريق المتابعة والتقويم">
 
           </div>
 
@@ -468,6 +542,26 @@ textarea{
 
         <textarea id="recommendations">تعزيز التدريب، تحديث المحتوى والأدوات، توسيع نطاق الاستخدام، وتفعيل خطة تحسين مستمرة تعتمد على نتائج القياس.</textarea>
 
+        <div class="row2">
+
+          <div>
+
+            <label>اسم توقيع القائدة</label>
+
+            <input id="leaderSign" value="ابتهال عبدالله الصاملي">
+
+          </div>
+
+          <div>
+
+            <label>اسم توقيع معدة التقرير</label>
+
+            <input id="preparerSign" placeholder="اكتبي اسم معدة التقرير للتوقيع">
+
+          </div>
+
+        </div>
+
         <button class="btn" onclick="generateReport()">إصدار التقرير</button>
 
         <button class="btn secondary" onclick="window.print()">طباعة / حفظ PDF</button>
@@ -528,6 +622,34 @@ textarea{
 
         <div id="reportOutput" class="report-box">لم يتم إنشاء التقرير بعد.</div>
 
+        <div class="signatures">
+
+          <div class="sign-box">
+
+            <strong>القائدة</strong>
+
+            <div id="leaderPrint">ابتهال عبدالله الصاملي</div>
+
+            <div class="sign-line"></div>
+
+            <div class="small">التوقيع</div>
+
+          </div>
+
+          <div class="sign-box">
+
+            <strong>معدة التقرير</strong>
+
+            <div id="preparerPrint">-</div>
+
+            <div class="sign-line"></div>
+
+            <div class="small">التوقيع</div>
+
+          </div>
+
+        </div>
+
       </div>
 
     </div>
@@ -556,9 +678,15 @@ function generateReport(){
 
   const reportType = document.getElementById('reportType').value;
 
-  const period = document.getElementById('period').value;
+  const term = document.getElementById('term').value;
 
-  const preparedBy = document.getElementById('preparedBy').value;
+  const academicYear = document.getElementById('academicYear').value;
+
+  const leaderName = document.getElementById('leaderName').value;
+
+  const preparedBy = document.getElementById('preparedBy').value || "غير محدد";
+
+  const department = document.getElementById('department').value;
 
   const reportDate = document.getElementById('reportDate').value;
 
@@ -580,6 +708,10 @@ function generateReport(){
 
   const recommendations = document.getElementById('recommendations').value;
 
+  const leaderSign = document.getElementById('leaderSign').value || leaderName;
+
+  const preparerSign = document.getElementById('preparerSign').value || preparedBy;
+
   const avg = Math.round((completion + satisfaction + goalAchievement + eduImpact + adminImpact) / 5);
 
   const judgement = getJudgement(avg);
@@ -591,6 +723,10 @@ function generateReport(){
   document.getElementById('m3').innerHTML = '<span class="badge ' + judgement.cls + '">' + judgement.text + '</span>';
 
   document.getElementById('m4').textContent = reportType;
+
+  document.getElementById('leaderPrint').textContent = leaderSign;
+
+  document.getElementById('preparerPrint').textContent = preparerSign;
 
   let intro = '';
 
@@ -610,11 +746,17 @@ function generateReport(){
 
 اسم المبادرة: ${initiative}
 
-الفترة: ${period}
+الفصل الدراسي: ${term}
+
+العام الدراسي: ${academicYear}
 
 تاريخ التقرير: ${reportDate}
 
-الجهة المعدة: ${preparedBy}
+القائدة: ${leaderName}
+
+معدة التقرير: ${preparedBy}
+
+الجهة المعدة للتقرير: ${department}
 
 مقدمة:
 
@@ -638,7 +780,7 @@ ${intro}
 
 تحليل النتائج:
 
-تشير النتائج إلى أن المبادرة حققت مستوى ${judgement.text} من الفاعلية، وقد أسهمت في رفع كفاءة الأداء وتحسين جودة المخرجات وتعزيز الاستفادة من الحلول الرقمية داخل المجتمع التعليمي. كما يظهر من المؤشرات أن هناك أثرًا واضحًا على الجوانب التعليمية والإدارية، مع أهمية الاستمرار في المتابعة الدورية لضمان استدامة التحسن.
+تشير النتائج إلى أن المبادرة حققت مستوى ${judgement.text} من الفاعلية، وقد أسهمت في رفع كفاءة الأداء وتحسين جودة المخرجات وتعزيز الاستفادة من الحلول الرقمية داخل المجتمع التعليمي. كما تظهر المؤشرات أثرًا إيجابيًا على الجوانب التعليمية والإدارية، مع أهمية الاستمرار في المتابعة المنظمة، وقياس الفجوات، وتوجيه التحسين وفق النتائج المتحققة.
 
 أبرز المنجزات:
 
@@ -654,7 +796,7 @@ ${recommendations}
 
 الخلاصة:
 
-تؤكد نتائج هذا ${reportType === 'تقرير دوري' ? 'التقرير الدوري' : 'التقرير الختامي'} أن المبادرة تمثل أداة فاعلة في دعم التحول الرقمي وتحسين العمليات التعليمية والإدارية، وأن استمرار تطويرها وتوسيع نطاقها سيعزز أثرها المؤسسي والتعليمي بصورة أكبر.`;
+يؤكد هذا ${reportType === 'تقرير دوري' ? 'التقرير الدوري' : 'التقرير الختامي'} أن المبادرة تمثل أداة فاعلة في دعم التحول الرقمي وتحسين العمليات التعليمية والإدارية، وأن استمرار تطويرها وتوسيع نطاقها سيعزز أثرها المؤسسي والتعليمي بصورة أكبر.`;
 
   document.getElementById('reportOutput').textContent = reportText;
 
